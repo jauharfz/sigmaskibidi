@@ -20,3 +20,203 @@ def main_menu():
           sys.exit
       else:
           print("masukan input yang valid")
+def register():
+    while True:
+        print("Registrasi:")
+        username = input("Masukan username(Enter untuk kembali): ")
+        if username == '':
+            break
+        if not username.isalnum():
+            print("username harus huruf ataupun angka")
+            continue
+        if username in users:
+            print("username sudah digunakan wir")
+            continue
+        password = input("Masukan password(minimal 6 karakter): ")
+        if len(password) < 6:
+            print("karakter passwordnya kurang :(")
+            continue
+        name = input("masukan nickname(bebas): ")
+        users[username] = {"name": name, "password": password,"username":username}
+        print(f"berbahagialah nama anda: {name} sudah terdaftar")
+        break
+
+def login():
+    global logged_in_user
+    while True:
+        print("Halaman login")
+        username = input("masukan username(Enter untuk kembali): ")
+        if username == '':
+            break
+        if username not in users:
+            print("mohon masukan username yang benar")
+            continue
+
+        attemts = 0
+        while attemts < 3:
+            password = input("masukan password: ")
+            if password == users[username]["password"]:
+                logged_in_user = username
+                print(f"selamat datang {users[username]["name"]} ")
+                user_menu()
+                return
+            else:
+                attemts += 1
+                print(f"password salah({attemts}/3)")
+        if attemts == 3:
+            print("silahkan kembali masukan username")
+            continue
+
+def user_menu():
+    while True:
+        print("Menu Utama\n"
+            "1. lihat profil\n"
+              "2. Jual akun\n"
+              "3. Beli akun\n"
+              "4. Log out")
+        choice = input("Pilih menu: ")
+        if choice == '1':
+            view_profile()
+        elif choice == '2':
+            sell_account()
+        elif choice == '3':
+            buy_account()
+        elif choice == '4':
+            global logged_in_user
+            logged_in_user = None
+            main_menu()
+        else:
+            print("masukan pilihan yang valid wir")
+def sell_account():
+    while True:
+        print("Jual akun"
+              "Pilih kategori game")
+        for idx, game in enumerate(games, 1):
+            print(f"{idx}. {game}")
+        print("0. Kembali")
+        choice = input("Masukan pilihan: ")
+        if choice == '0':
+            break
+        if choice.isdigit() and 1 <= int(choice) <= len(games):
+            game_choice = games[int(choice)-1]
+            judul = input("Masukan judul: ")
+            deskripsi = input("Masukan deskripsi: ")
+            while True:
+                harga = input("Masukan harga: ")
+                if harga.isdigit():
+                    break
+                print("Mohon masukan harga berupa angka")
+            id = input("Masukan ID: ")
+            while True:
+                password = input("Masukan password: ")
+                if len(password) >= 6:
+                    break
+                print("Password minimal 6 karakter")
+            accounts = {
+                'title': judul,
+                'description': deskripsi,
+                'price': int(harga),
+                'id': id,
+                'password': password,
+                'owner': logged_in_user,
+                'sold': False
+            }
+            account_in_game[game_choice].append(accounts)
+            sell_history.setdefault(logged_in_user, []).append(accounts)
+            print("akun berhasil ditambahkan di daftar jual")
+            break
+        else:
+            print("pilihan tidak valid")
+
+def buy_account():
+    while True:
+        print("Beli akun\n"
+              "Pilih kategori game")
+        for idx, game in enumerate(games, 1):
+            print(f"{idx}. {game}")
+        print("0. Kembali")
+        choice = input("Masukan pilihan: ")
+        if choice == '0':
+            break
+        if choice.isdigit() and 1 <= int(choice) <= len(games):
+            game_choice = games[int(choice)-1]
+            available_accounts = [acc for acc in account_in_game[game_choice] if acc['owner'] != logged_in_user and not acc['sold']]
+            if available_accounts:
+                for idx, avl in enumerate(available_accounts, 1):
+                    print(f"{idx}. {avl['title']}, Harga= {avl['price']}")
+                print("0. Kembali")
+                choice2 = input("Masukan pilihan: ")
+                if choice2 == '0':
+                    break
+                elif choice2.isdigit() and 1 <= int(choice2) <=len(available_accounts):
+                    selected_acc = available_accounts[int(choice2)-1]
+                    print(f"Judul: {selected_acc['title']}\n"
+                          f"Deskripsi: {selected_acc['description']}\n"
+                          f"Harga: {selected_acc['price']}\n"
+                          f"1. Beli\n"
+                          f"0. Kembali")
+                    choice3 = input("masukan pilihan: ")
+                    if choice3 == '0':
+                        continue
+                    elif choice == '1':
+                        purchase_acc(selected_acc)
+                    else:
+                        print("Masukan pilihan yang valid")
+                else:
+                    print("Masukan pilihan yang valid")
+            else:
+                input("Akun tidak tersedia, tekan enter untuk kembali")
+        else:
+            print("Masukan tidak valid")
+
+def purchase_acc(selected_acc):
+    while True:
+        print("Pilih metode pembayaran:")
+        print("1. OVO")
+        print("2. DANA")
+        print("3. GoPay")
+        print("4. Kembali")
+        choice = input("Pilih metode pembayaran: ")
+
+        if choice in ['1', '2', '3']:
+            while True:
+                phone_number = input("Masukkan nomor HP: ")
+                if phone_number.isdigit():
+                    break
+                print("Nomor HP harus berupa angka.")
+
+            print("Mengirim OTP...")
+            time.sleep(5)
+            otp = input("Masukkan OTP: ")
+            print("1. Konfirmasi Pembelian")
+            print("2. Batalkan Pembelian")
+            confirm = input("Pilih menu: ")
+
+            if confirm == '1':
+                selected_acc["sold"] = True  # paramenter
+                buy_history.setdefault(logged_in_user, []).append(selected_acc)
+                print("Pembelian berhasil. ID dan password bisa dilihat di riwayat pembelian.")
+                break
+            elif confirm == '2':
+                continue
+            else:
+                print("Pilihan tidak valid. Silakan coba lagi.")
+        elif choice == '4':
+            break
+        else:
+            print("Pilihan tidak valid. Silakan coba lagi.")
+def view_profile():
+    while True:
+        print("Lihat profil\n"
+            "1. Riwayat pembelian & penjualan akun\n"
+              "2. Pengaturan akun\n"
+              "3. Kembali ke menu")
+        choice = input("Pilih menu: ")
+        if choice == '1':
+            view_history()
+        elif choice == '2':
+            account_settings()
+        elif choice == '3':
+            user_menu()
+        else:
+            print("mohon masukan pilihan yang valid")
