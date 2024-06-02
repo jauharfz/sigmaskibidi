@@ -1,7 +1,10 @@
 import time
+import sys
 
 users = {}
 logged_in_user = False 
+sell_history = {}
+buy_history = {}
 games = ["Legenda Seluler", "EpEp", "King Bengsin"]
 account_in_game = {for game in games: []}
 
@@ -24,7 +27,7 @@ def main_menu():
 def register():
     while True:
         print("Registrasi:")
-        username = input("Masukan username(0 untuk kembali): ")
+        username = input("Masukan username(Enter untuk kembali): ")
         if username == '0':
             break
         if not username.isalnum():
@@ -46,8 +49,8 @@ def login():
     global logged_in_user
     while True:
         print("Halaman login")
-        username = input("Masukan username(0 untuk kembali): ")
-        if username == '0':
+        username = input("Masukan username(Enter untuk kembali): ")
+        if username == '':
             break
         if username not in users:
             print("Mohon masukan username yang benar")
@@ -64,7 +67,7 @@ def login():
             else:
                 attempts += 1
                 print(f"Password salah({attempts}/3)")
-        if attempts >= 3:
+        if attempts == 3:
             print("Silahkan kembali masukan username")
             continue
 
@@ -85,10 +88,143 @@ def user_menu():
             buy_account()
         elif choice == '4':
             logged_in_user = None
-            break
+            main_menu()
         else:
             print("Masukan pilihan yang valid")
 
+def sell_account():
+    while True:
+        print("Jual akun\nPilih kategori game")
+        for idx, game in enumerate(games, 1):
+            print(f"{idx}. {game}")
+        print("0. Kembali")
+        choice = input("Masukan pilihan: ")
+        if choice == '0':
+            break
+        if choice.isdigit() and 1 <= int(choice) <= len(games):
+            game_choice = games[int(choice) - 1]
+            judul = input("Masukan judul: ")
+            deskripsi = input("Masukan deskripsi: ")
+            while True:
+                harga = input("Masukan harga: ")
+                if harga.isdigit():
+                    break
+                print("Mohon masukan harga berupa angka")
+            email = input("Masukan email: ")
+            while True:
+                password = input("Masukan password: ")
+                if len(password) >= 6:
+                    break
+                print("Password minimal 6 karakter")
+            accounts = {
+                'title': judul,
+                'description': deskripsi,
+                'price': int(harga),
+                'email': email,
+                'password': password,
+                'owner': logged_in_user,
+                'sold': False
+            }
+            account_in_game[game_choice].append(accounts)
+            sell_history.setdefault(logged_in_user, []).append(accounts)
+            input("Akun berhasil ditambahkan di daftar jual")
+            break
+        else:
+            print("Pilihan tidak valid")
+              
+def buy_account():
+    while True:
+        print("Beli akun\nPilih kategori game")
+        for idx, game in enumerate(games, 1):
+            print(f"{idx}. {game}")
+        print("0. Kembali")
+        choice = input("Masukan pilihan: ")
+        if choice == '0':
+            break
+        if choice.isdigit() and 1 <= int(choice) <= len(games):
+            game_choice = games[int(choice) - 1]
+            available_accounts = [acc for acc in account_in_game[game_choice] if acc['owner'] != logged_in_user and not acc['sold']]
+            if available_accounts:
+                for idx, avl in enumerate(available_accounts, 1):
+                    print(f"{idx}. {avl['title']}, Harga= {avl['price']}")
+                print("0. Kembali")
+                choice2 = input("Masukan pilihan: ")
+                if choice2 == '0':
+                    break
+                elif choice2.isdigit() and 1 <= int(choice2) <= len(available_accounts):
+                    selected_acc = available_accounts[int(choice2)-1]
+                    print(f"Judul: {selected_acc['title']}\n"
+                          f"Deskripsi: {selected_acc['description']}\n"
+                          f"Harga: {selected_acc['price']}\n"
+                          f"1. Beli\n"
+                          f"0. Kembali")
+                    choice3 = input("Masukan pilihan: ")
+                    if choice3 == '0':
+                        continue
+                    elif choice3 == '1':
+                        purchase_acc(selected_acc)
+                    else:
+                        print("Masukan pilihan yang valid")
+                else:
+                    print("Masukan pilihan yang valid")
+            else:
+                input("Akun tidak tersedia, tekan enter untuk kembali")
+        else:
+            print("Masukan tidak valid")
+              
+def purchase_acc(selected_acc):
+    while True:
+        print("Pilih metode pembayaran:")
+        print("1. OVO")
+        print("2. DANA")
+        print("3. GoPay")
+        print("4. Kembali")
+        choice = input("Pilih metode pembayaran: ")
+
+        if choice in ['1', '2', '3']:
+            while True:
+                phone_number = input("Masukkan nomor HP: ")
+                if phone_number.isdigit():
+                    break
+                print("Nomor HP harus berupa angka.")
+
+            print("Mengirim OTP...")
+            time.sleep(5)
+            otp = input("Masukkan OTP: ")
+            print("1. Konfirmasi Pembelian")
+            print("2. Batalkan Pembelian")
+            confirm = input("Pilih menu: ")
+
+            if confirm == '1':
+                selected_acc["sold"] = True
+                buy_history.setdefault(logged_in_user, []).append(selected_acc)
+                input("Pembelian berhasil. Email dan password bisa dilihat di riwayat pembelian.")
+                break
+            elif confirm == '2':
+                continue
+            else:
+                print("Pilihan tidak valid. Silakan coba lagi.")
+        elif choice == '4':
+            break
+        else:
+            print("Pilihan tidak valid. Silakan coba lagi.")
+
+def view_profile():
+    while True:
+        print("Lihat profil\n"
+              "1. Riwayat pembelian & penjualan akun\n"
+              "2. Pengaturan akun\n"
+              "3. Kembali ke menu")
+        choice = input("Pilih menu: ")
+        if choice == '1':
+            view_history()
+        elif choice == '2':
+            account_settings()
+        elif choice == '3':
+            user_menu()
+        else:
+            print("Mohon masukan pilihan yang valid")
+              
 def view_history():
     while True:
         print("Riwayat pembelian & penjualan akun:\n"
@@ -121,7 +257,7 @@ def view_purchase_history():
                 print(f"Judul: {selected_item['title']}")
                 print(f"Deskripsi: {selected_item['description']}")
                 print(f"Harga: {selected_item['price']}")
-                print(f"ID: {selected_item['id']}")
+                print(f"Email: {selected_item['email']}")
                 print(f"Password: {selected_item['password']}")
                 input("Tekan Enter untuk kembali.")
             else:
@@ -166,7 +302,7 @@ def view_sale_history():
                     print(f"Judul: {selected_item['title']}")
                     print(f"Deskripsi: {selected_item['description']}")
                     print(f"Harga: {selected_item['price']}")
-                    print(f"ID: {selected_item['id']}")
+                    print(f"Email: {selected_item['email']}")
                     print(f"Password: {selected_item['password']}")
                     sale_detail_menu(selected_item, editable = True)
                 else:
@@ -174,7 +310,7 @@ def view_sale_history():
                     print(f"Judul: {selected_item['title']}")
                     print(f"Deskripsi: {selected_item['description']}")
                     print(f"Harga: {selected_item['price']}")
-                    print(f"ID: {selected_item['id']}")
+                    print(f"Email: {selected_item['email']}")
                     print(f"Password: {selected_item['password']}")
                     sale_detail_menu(selected_item, editable = False)
             else:
@@ -193,12 +329,73 @@ def sale_detail_menu(account, editable):
         choice = input("Pilih menu: ")
         if choice == '1' and editable:
             delete_sale(account)
+            return
         elif choice == '2' and editable:
             edit_sale(account)
         elif choice == '0' and not editable or choice == '3' and editable:
             break
         else:
             print("masukan pilihan yang valdef account_settings():
+                  
+def delete_sale(account):
+    while True:
+        print("Hapus akun")
+        confirm = input("Ketik 'ya' jika akun ingin dihapus: ")
+        if confirm == 'ya':
+            for game in games:
+                if account in account_in_game[game]:
+                    account_in_game[game].remove(account)
+            sell_history[logged_in_user].remove(account)
+            print("Akun berhasil dihapus")
+            break
+        else:
+            print("Akun gagal dihapus")
+            break
+            
+def edit_sale(account):
+    while True:
+        print("Edit akun\n"
+              "1. Judul\n"
+              "2. Deskripsi\n"
+              "3. Harga\n"
+              "4. Email\n"
+              "5. Password\n"
+              "6. Kembali")
+        choice = input("Pilih menu: ")
+        if choice == '1':
+            judul = input("Masukan judul baru: ")
+            account['title'] = judul
+            print("Judul berhasil diubah")
+        elif choice == '2':
+            deskripsi = input("Masukan deskripsi baru: ")
+            account['description'] = deskripsi
+            print("Deskripsi berhasil diubah")
+        elif choice == '3':
+            while True:
+                price = input("Masukan harga baru: ")
+                if price.isdigit():
+                    account['price'] = int(price)
+                    print("Harga berhasil diubah")
+                    break
+                else:
+                    print("Harus menggunakan angka")
+        elif choice == '4':
+            email = input("Masukan email baru: ")
+            account['email'] = email
+            print("Email berhasil diubah")
+        elif choice == '5':
+            while True:
+                password = input("Masukan password baru (minimal 6 karakter): ")
+                if len(password) >= 6:
+                    account['password'] = password
+                    print("Password berhasil diubah")
+                    break
+                else:
+                    print("Password minimal 6 karakter")
+        elif choice == '6':
+            break
+        else:
+            print("Masukan pilihan yang benar")
 
 def account_settings():
     while True:
@@ -236,7 +433,7 @@ def change_password():
             continue
 
         users[logged_in_user]['password'] = new_pwd
-        print("password telah berhasil diubah")
+        input("password telah berhasil diubah")
         break            
 
 def change_username():
@@ -267,7 +464,7 @@ def change_username():
                     account['owner'] = logged_in_user
 
         logged_in_user = new_user
-        print("username berhasil berubah")
+        input("username berhasil berubah")
         break
 
 def delete_account():
@@ -286,15 +483,16 @@ def delete_account():
                 buy_history.pop(logged_in_user, None)
                 sell_history.pop(logged_in_user, None)
                 logged_in_user = None
-                print("akun berhasil dihapus")
-                break
+                input("akun berhasil dihapus")
+                main_menu()
+                return
             else:
                 print("akun gagal dihapus")
                 continue
         else:
             print("username atau password tidak valid")
             continue
-    main_menu()
+
 
 if __name__ == "__main__":
     main_menu()
