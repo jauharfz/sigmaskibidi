@@ -89,22 +89,6 @@ def user_menu():
         else:
             print("Masukan pilihan yang valid")
 
-def view_profile():
-    while True:
-        print("Lihat profil\n"
-              "1. Riwayat pembelian & penjualan akun\n"
-              "2. Pengaturan akun\n"
-              "3. Kembali ke menu")
-        choice = input("Pilih menu: ")
-        if choice == '1':
-            view_history()
-        elif choice == '2':
-            account_settings()
-        elif choice == '3':
-            break
-        else:
-            print("Mohon masukan pilihan yang valid")
-
 def view_history():
     while True:
         print("Riwayat pembelian & penjualan akun:\n"
@@ -159,6 +143,7 @@ def view_sale_history():
                     print(f"{idx}. {item['title']}")
             else:
                 print("belum ada akun yang belum terjual")
+                  
             if sold_sales:
                 print("akun yang sudah terjual")
                 for idx, item in enumerate(sold_sales, 1):
@@ -169,6 +154,7 @@ def view_sale_history():
             input("belum ada riwayat penjualan, tekan enter untuk kembali")
             view_history()
         print("0. Kembali")
+          
         choice = input("masukan pilihan: ")
         if choice == '0':
             break
@@ -193,5 +179,23 @@ def view_sale_history():
                     sale_detail_menu(selected_item, editable = False)
             else:
                 print("masukan pilihan yang valid")
+        else:
+            print("masukan pilihan yang valid")
+
+def sale_detail_menu(account, editable):
+    while True:
+        if editable:
+            print("1. Hapus\n"
+                  "2. Edit\n"
+                  "3. Kembali")
+        else:
+            print("0. Kembali")
+        choice = input("Pilih menu: ")
+        if choice == '1' and editable:
+            delete_sale(account)
+        elif choice == '2' and editable:
+            edit_sale(account)
+        elif choice == '0' and not editable or choice == '3' and editable:
+            break
         else:
             print("masukan pilihan yang valid")
