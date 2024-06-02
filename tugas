@@ -87,6 +87,7 @@ def user_menu():
             main_menu()
         else:
             print("masukan pilihan yang valid")
+
 def sell_account():
     while True:
         print("Jual akun"
@@ -205,6 +206,7 @@ def purchase_acc(selected_acc):
             break
         else:
             print("Pilihan tidak valid. Silakan coba lagi.")
+
 def view_profile():
     while True:
         print("Lihat profil\n"
