@@ -86,7 +86,7 @@ def user_menu():
             logged_in_user = None
             main_menu()
         else:
-            print("masukan pilihan yang valid wir")
+            print("masukan pilihan yang valid")
 def sell_account():
     while True:
         print("Jual akun"
@@ -220,3 +220,44 @@ def view_profile():
             user_menu()
         else:
             print("mohon masukan pilihan yang valid")
+
+def view_history():
+    while True:
+        print("Riwayat pembelian & penjualan akun:\n"
+              "1. Riwayat pembelian\n"
+              "2. Riwayat penjualan\n"
+              "3. Keluar")
+        choice = input("Pilih menu: ")
+        if choice == '1':
+            view_purchase_history()
+        elif choice == '2':
+            view_sale_history()
+        elif choice == '3':
+            view_profile()
+        elif:
+            print("masukan pilihan yang valid")
+
+def view_purchase_history():
+    while True:
+        print("Histori Pembelian")
+        purchases = buy_history.get(logged_in_user, [])
+        if purchases:
+            for idx, lst in enumerate(purchases, 1):
+                print(f"{idx}. {lst['title']}")
+            print("0. Kembali")
+            choice = input("Pilih akun: ")
+            if choice == '0'
+                break
+            if choice.isdigit() and 1 <= int(choice) <= len(purchases):
+                selected_item = purchases[int(choice)-1]
+                print(f"Judul: {selected_item['title']}")
+                print(f"Deskripsi: {selected_item['description']}")
+                print(f"Harga: {selected_item['price']}")
+                print(f"ID: {selected_item['id']}")
+                print(f"Password: {selected_item['password']}")
+                input("Tekan Enter untuk kembali.")
+            else:
+                print("masukan pilihan yang valid")
+        else:
+            input("belum ada akun yang dibeli, tekan enter untuk kembali")
+            break
