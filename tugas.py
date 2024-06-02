@@ -238,3 +238,34 @@ def change_password():
         users[logged_in_user]['password'] = new_pwd
         print("password telah berhasil diubah")
         break            
+
+def change_username():
+    global logged_in_user
+    while True:
+        old_user = input("masukan username lama(atau tekan Enter untuk kembali): ")
+        if old_user == '':
+            break
+        if old_user != logged_in_user:
+            print("username tidak valid")
+            continue
+        new_user = input("masukan username baru: ")
+        if not new_user.isalnum():
+            print("harus menggunakan huruf atau angka saja")
+            continue
+        if new_user in users:
+            print("username telah digunakan")
+            continue
+        users[new_user] = users.pop(logged_in_user)
+        users[new_user]['username'] = new_user
+        if logged_in_user in buy_history:
+            buy_history[new_user] = buy_history.pop(logged_in_user)
+        if logged_in_user in sell_history:
+            sell_history[new_user] = sell_history.pop(logged_in_user)
+        for game, accounts in account_in_game.items():
+            for account in accounts:
+                if account['owner'] == logged_in_user:
+                    account['owner'] = logged_in_user
+
+        logged_in_user = new_user
+        print("username berhasil berubah")
+        break
