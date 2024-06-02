@@ -118,7 +118,7 @@ def view_history():
             view_sale_history()
         elif choice == '3':
             view_profile()
-        elif:
+        else:
             print("masukan pilihan yang valid")
 
 def view_purchase_history():
@@ -130,7 +130,7 @@ def view_purchase_history():
                 print(f"{idx}. {lst['title']}")
             print("0. Kembali")
             choice = input("Pilih akun: ")
-            if choice == '0'
+            if choice == '0':
                 break
             if choice.isdigit() and 1 <= int(choice) <= len(purchases):
                 selected_item = purchases[int(choice)-1]
@@ -145,3 +145,53 @@ def view_purchase_history():
         else:
             input("belum ada akun yang dibeli, tekan enter untuk kembali")
             break
+
+def view_sale_history():
+    while True:
+        print("Histori penjualam")
+        sales = sell_history.get(logged_in_user, [])
+        unsold_sales = [item for item in sales if not item['sold']]
+        sold_sales = [item for item in sales if item['sold']]
+        if unsold_sales or sold_sales:
+            if unsold_sales:
+                print("akun yang belum terjual")
+                for idx, item in enumerate(unsold_sales, 1):
+                    print(f"{idx}. {item['title']}")
+            else:
+                print("belum ada akun yang belum terjual")
+            if sold_sales:
+                print("akun yang sudah terjual")
+                for idx, item in enumerate(sold_sales, 1):
+                    print(f"{idx+len(unsold_sales)}. {item['title']}")
+            else:
+                print("belum ada akun yang sudah terjual")
+        else:
+            input("belum ada riwayat penjualan, tekan enter untuk kembali")
+            view_history()
+        print("0. Kembali")
+        choice = input("masukan pilihan: ")
+        if choice == '0':
+            break
+        elif choice.isdigit():
+            choice = int(choice)
+            if 1 <= choice <= len(unsold_sales) + len(sold_sales):
+                if choice <= len(unsold_sales):
+                    selected_item = unsold_sales[choice - 1]
+                    print(f"Judul: {selected_item['title']}")
+                    print(f"Deskripsi: {selected_item['description']}")
+                    print(f"Harga: {selected_item['price']}")
+                    print(f"ID: {selected_item['id']}")
+                    print(f"Password: {selected_item['password']}")
+                    sale_detail_menu(selected_item, editable = True)
+                else:
+                    selected_item = sold_sales[choice - len(unsold_sales) - 1]
+                    print(f"Judul: {selected_item['title']}")
+                    print(f"Deskripsi: {selected_item['description']}")
+                    print(f"Harga: {selected_item['price']}")
+                    print(f"ID: {selected_item['id']}")
+                    print(f"Password: {selected_item['password']}")
+                    sale_detail_menu(selected_item, editable = False)
+            else:
+                print("masukan pilihan yang valid")
+        else:
+            print("masukan pilihan yang valid")
