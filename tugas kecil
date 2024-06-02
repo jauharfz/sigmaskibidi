@@ -1,0 +1,22 @@
+import time
+
+users = {}
+logged_in_user = False
+games = ["Legenda Seluler", "EpEp", "King Bengsin"]
+account_in_game = {for game in games: []}
+
+def main_menu():
+      print("Ini bagian Login/Register\n"
+            "1. Register\n"
+            "2. Login\n"
+            "3. Keluar dari program")
+      choice = input("Pilih Menu: ")
+      if choice == '1':
+           register()
+      elif choice == '2':
+          login()
+      elif choice == '3':
+          print("Selamat anda telah keluar :)")
+          sys.exit
+      else:
+          print("masukan input yang valid")
