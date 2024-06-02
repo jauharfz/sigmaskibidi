@@ -269,3 +269,32 @@ def change_username():
         logged_in_user = new_user
         print("username berhasil berubah")
         break
+
+def delete_account():
+    global logged_in_user
+    while True:
+        username = input("masukan username(tekan Enter untuk kembali): ")
+        if username == '':
+            break
+        password = input("masukan password: ")
+        if username == users[logged_in_user]['username'] and password == users[logged_in_user]['password']:
+            confirm = input("ketik 'ya' untuk menghapus akun: ")
+            if confirm == 'ya':
+                for game in games:
+                    account_in_game[game] = [acc for acc in account_in_game[game] if acc['owner'] != logged_in_user]
+                del users[logged_in_user]
+                buy_history.pop(logged_in_user, None)
+                sell_history.pop(logged_in_user, None)
+                logged_in_user = None
+                print("akun berhasil dihapus")
+                break
+            else:
+                print("akun gagal dihapus")
+                continue
+        else:
+            print("username atau password tidak valid")
+            continue
+    main_menu()
+
+if __name__ == "__main__":
+    main_menu()
