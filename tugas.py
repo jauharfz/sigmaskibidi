@@ -220,3 +220,21 @@ def account_settings():
             break
         else:
             print("Pilihan tidak valid. Silakan coba lagi.")
+
+
+def change_password():
+    while True:
+        old_pwd = input("masukan password lama(tekan Enter untuk kembali)")
+        if old_pwd == '':
+            break
+        if old_pwd != users[logged_in_user]['password']:
+            print("password tidak valid")
+            continue
+        new_pwd = input("masukan password baru: ")
+        if len(new_pwd) < 6:
+            print("password minimal 6 karakter")
+            continue
+
+        users[logged_in_user]['password'] = new_pwd
+        print("password telah berhasil diubah")
+        break            
