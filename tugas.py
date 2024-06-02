@@ -198,4 +198,25 @@ def sale_detail_menu(account, editable):
         elif choice == '0' and not editable or choice == '3' and editable:
             break
         else:
-            print("masukan pilihan yang valid")
+            print("masukan pilihan yang valdef account_settings():
+
+def account_settings():
+    while True:
+        print("Pengaturan akun\n"
+                "1. Ubah Password\n"
+                "2. Ubah Username\n"
+                "3. Hapus Akun\n"
+                "4. Kembali\n")
+        choice = input("Pilih menu: ")
+
+        if choice == '1':
+            change_password()
+        elif choice == '2':
+            change_username()
+        elif choice == '3':
+            delete_account()
+            break
+        elif choice == '4':
+            break
+        else:
+            print("Pilihan tidak valid. Silakan coba lagi.")
